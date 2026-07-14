@@ -17,6 +17,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   const product = useMemo(() => getProductWithDetails(id), [id, getProductWithDetails]);
 
+  const costData = useMemo(() => {
+    const data: { name: string; value: number }[] = [];
+    if (!product) return data;
+    (product.product_recipes || []).forEach((pr: any) => {
+      if ((pr.cost || 0) > 0) data.push({ name: `[สูตร] ${pr.recipe?.name || ''}`, value: pr.cost });
+    });
+    (product.product_packaging || []).forEach((pp: any) => {
+      if ((pp.cost || 0) > 0) data.push({ name: `[กล่อง] ${pp.packaging?.name || ''}`, value: pp.cost });
+    });
+    return data;
+  }, [product]);
+
   if (!product) {
     return (
       <div className="empty-state">
@@ -35,16 +47,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const costData = useMemo(() => {
-    const data: { name: string; value: number }[] = [];
-    (product.product_recipes || []).forEach((pr: any) => {
-      if ((pr.cost || 0) > 0) data.push({ name: `[สูตร] ${pr.recipe?.name || ''}`, value: pr.cost });
-    });
-    (product.product_packaging || []).forEach((pp: any) => {
-      if ((pp.cost || 0) > 0) data.push({ name: `[กล่อง] ${pp.packaging?.name || ''}`, value: pp.cost });
-    });
-    return data;
-  }, [product]);
+
 
   return (
     <div className="animate-fade-in">

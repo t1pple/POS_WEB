@@ -17,6 +17,29 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
 
   const recipe = useMemo(() => getRecipeWithDetails(id), [id, getRecipeWithDetails]);
 
+  // Cost breakdown for pie chart
+  const costData = useMemo(() => {
+    const data: { name: string; value: number }[] = [];
+    if (!recipe) return data;
+    
+    if (recipe.ingredients) {
+      for (const ri of recipe.ingredients) {
+        if ((ri as any).cost > 0) {
+          data.push({ name: (ri as any).ingredient?.name || 'วัตถุดิบ', value: (ri as any).cost });
+        }
+      }
+    }
+    if (recipe.sub_recipes) {
+      for (const rsr of recipe.sub_recipes) {
+        if ((rsr as any).cost > 0) {
+          data.push({ name: `[สูตร] ${(rsr as any).sub_recipe?.name || 'สูตรย่อย'}`, value: (rsr as any).cost });
+        }
+      }
+    }
+    return data;
+  }, [recipe]);
+
+
   if (!recipe) {
     return (
       <div className="empty-state">
@@ -39,25 +62,6 @@ export default function RecipeDetailPage({ params }: { params: Promise<{ id: str
   const yieldQty = recipe.yield_quantity || 1;
   const costPerPiece = totalCost / yieldQty;
 
-  // Cost breakdown for pie chart
-  const costData = useMemo(() => {
-    const data: { name: string; value: number }[] = [];
-    if (recipe.ingredients) {
-      for (const ri of recipe.ingredients) {
-        if ((ri as any).cost > 0) {
-          data.push({ name: (ri as any).ingredient?.name || 'วัตถุดิบ', value: (ri as any).cost });
-        }
-      }
-    }
-    if (recipe.sub_recipes) {
-      for (const rsr of recipe.sub_recipes) {
-        if ((rsr as any).cost > 0) {
-          data.push({ name: `[สูตร] ${(rsr as any).sub_recipe?.name || 'สูตรย่อย'}`, value: (rsr as any).cost });
-        }
-      }
-    }
-    return data;
-  }, [recipe]);
 
   return (
     <div className="animate-fade-in">
