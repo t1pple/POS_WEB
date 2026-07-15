@@ -119,45 +119,48 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  // Fetch Data
+  // Fetch Data (2-stage: profile/shop first, then filter all data by shop_id)
   const fetchAllData = useCallback(async (userId: string) => {
+    // Stage 1: fetch profile to get shop_id
+    const { data: pData } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (!pData) return;
+    setProfile(pData);
+
+    const shopId = pData.shop_id;
+    if (!shopId) return;
+
+    // Stage 2: fetch everything filtered by shop_id
+    const { data: sData } = await supabase.from('shops').select('*').eq('id', shopId).single();
+    if (sData) setShop(sData);
+
     const [
-      { data: pData },
       { data: iData },
       { data: pkgData },
       { data: rData },
       { data: riData },
-      { data: rpData },
       { data: rsrData },
       { data: prodData },
       { data: prData },
       { data: ppData },
       { data: oData },
       { data: oiData },
-      { data: sData }
     ] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).single(),
-      supabase.from('ingredients').select('*').order('created_at', { ascending: false }),
-      supabase.from('packaging').select('*').order('created_at', { ascending: false }),
-      supabase.from('recipes').select('*').order('created_at', { ascending: false }),
+      supabase.from('ingredients').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }),
+      supabase.from('packaging').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }),
+      supabase.from('recipes').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }),
       supabase.from('recipe_ingredients').select('*'),
-      supabase.from('recipe_packaging').select('*'),
       supabase.from('recipe_sub_recipes').select('*'),
-      supabase.from('products').select('*').order('created_at', { ascending: false }),
+      supabase.from('products').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }),
       supabase.from('product_recipes').select('*'),
       supabase.from('product_packaging').select('*'),
-      supabase.from('orders').select('*').order('created_at', { ascending: false }),
+      supabase.from('orders').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }),
       supabase.from('order_items').select('*'),
-      supabase.from('shops').select('*').single(),
     ]);
 
-    if (pData) setProfile(pData);
-    if (sData) setShop(sData);
     if (iData) setIngredients(iData);
     if (pkgData) setPackaging(pkgData);
     if (rData) setRecipes(rData);
     if (riData) setRecipeIngredients(riData);
-    if (rpData) setRecipePackaging(rpData);
     if (rsrData) setRecipeSubRecipes(rsrData);
     if (prodData) setProducts(prodData);
     if (prData) setProductRecipes(prData);
