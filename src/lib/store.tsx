@@ -312,7 +312,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const updateIngredient = async (id: string, data: Partial<Ingredient>) => {
-    let updateData = { ...data };
+    const updateData = { ...data };
     if (data.price !== undefined || data.quantity !== undefined) {
       const ing = ingredients.find(i => i.id === id);
       const newPrice = data.price ?? ing?.price ?? 0;
@@ -348,7 +348,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const updatePackaging = async (id: string, data: Partial<Packaging>) => {
-    let updateData = { ...data };
+    const updateData = { ...data };
     if (data.price !== undefined || data.quantity !== undefined) {
       const pkg = packaging.find(p => p.id === id);
       const newPrice = data.price ?? pkg?.price ?? 0;
@@ -374,7 +374,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
    * คำนวณต้นทุนสูตร (รองรับ nested / sub-recipe แบบ recursive)
    * visited ใช้ป้องกัน circular dependency
    */
-  const getRecipeCost = useCallback((recipeId: string, visited: Set<string> = new Set()): number => {
+  const getRecipeCost = useCallback(function calculateCost(recipeId: string, visited: Set<string> = new Set()): number {
     // ป้องกัน circular
     if (visited.has(recipeId)) return 0;
     visited.add(recipeId);
@@ -406,7 +406,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const subRecipe = recipes.find(r => r.id === rsr.sub_recipe_id);
       if (subRecipe) {
         // ต้นทุนต่อหน่วย (per unit) ของสูตรย่อย
-        const subCostTotal = getRecipeCost(rsr.sub_recipe_id, new Set(visited));
+        const subCostTotal = calculateCost(rsr.sub_recipe_id, new Set(visited));
         const subYield = subRecipe.yield_quantity || 1;
         const costPerUnit = subCostTotal / subYield;
         cost += costPerUnit * rsr.quantity_used;
@@ -706,7 +706,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!newOrder) return '';
 
     const itemsToInsert = newItems.map(item => ({ order_id: newOrder.id, ...item }));
-    const { data: insertedItems, error: itemsError } = await supabase.from('order_items').insert(itemsToInsert).select();
+    const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
     
     if (itemsError) {
       console.error('Error inserting order items:', itemsError);

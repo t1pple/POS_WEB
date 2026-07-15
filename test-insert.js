@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const { createClient } = require('@supabase/supabase-js');
 
 

@@ -173,7 +173,7 @@ export default function IngredientsPage() {
                 const stockLabel = ing.stock_quantity <= 0 ? 'หมด' : ing.stock_quantity < 1 ? 'เหลือน้อย' : 'พร้อมใช้';
                 const isAdjusting = adjusting === ing.id;
                 return (
-                  <tr key={ing.id}>
+                  <tr key={ing.id} className={`animate-fade-in-up stagger-${Math.min(filtered.indexOf(ing) + 1, 8)}`}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                         <div style={{

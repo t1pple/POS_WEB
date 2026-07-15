@@ -217,6 +217,7 @@ export default function OrdersPage() {
             return (
               <div
                 key={order.id}
+                className={`animate-fade-in-up stagger-${Math.min(filtered.indexOf(order) + 1, 8)}`}
                 onClick={() => router.push(`/orders/${order.id}`)}
                 style={{
                   display: 'flex',

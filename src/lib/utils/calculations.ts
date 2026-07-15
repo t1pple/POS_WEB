@@ -1,4 +1,4 @@
-import { Ingredient, RecipeIngredient, RecipePackaging, Packaging, StockCheckResult, OrderItem } from '@/lib/types';
+import { Ingredient, RecipeIngredient, RecipePackaging, Packaging, StockCheckResult } from '@/lib/types';
 
 /**
  * คำนวณราคาต่อหน่วย
