@@ -247,7 +247,7 @@ export default function DashboardPage() {
   }, [orders, timeRange, currentStart]);
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: 'var(--space-8)' }}>
+    <div className="animate-slide-up" style={{ paddingBottom: 'var(--space-8)' }}>
       {/* Header & Filters */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
         <div>
@@ -307,7 +307,7 @@ export default function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
         
         {/* Pending Orders Priority Card */}
-        <div className="stat-card animate-fade-in-up stagger-1" style={{ background: 'linear-gradient(135deg, var(--primary-600), var(--primary-800))', color: '#fff', border: 'none' }}>
+        <div className="stat-card animate-slide-up stagger-1 hover-scale hover-glow" style={{ background: 'linear-gradient(135deg, var(--primary-600), var(--primary-800))', color: '#fff', border: 'none' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontSize: '1.1rem', opacity: 0.9, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -327,7 +327,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Production Plan Priority Card */}
-        <div className="stat-card animate-fade-in-up stagger-2" style={{ background: 'linear-gradient(135deg, var(--accent-orange), #ea580c)', color: '#fff', border: 'none' }}>
+        <div className="stat-card animate-slide-up stagger-2 hover-scale hover-glow" style={{ background: 'linear-gradient(135deg, var(--accent-orange), #ea580c)', color: '#fff', border: 'none' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <div style={{ fontSize: '1.1rem', opacity: 0.9, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -349,7 +349,7 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="stats-grid" style={{ marginBottom: 'var(--space-8)' }}>
-        <div className="stat-card animate-fade-in-up stagger-3">
+        <div className="stat-card animate-slide-up stagger-3">
           <div className="stat-card-header">
             <div>
               <div className="stat-card-label">รายได้ ({timeRange === 'today' ? 'วันนี้' : timeRange === 'month' ? 'เดือนนี้' : 'ปีนี้'})</div>
@@ -367,7 +367,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="stat-card animate-fade-in-up stagger-4">
+        <div className="stat-card animate-slide-up stagger-4">
           <div className="stat-card-header">
             <div>
               <div className="stat-card-label">ต้นทุนรวม</div>
@@ -382,7 +382,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="stat-card animate-fade-in-up stagger-5">
+        <div className="stat-card animate-slide-up stagger-5">
           <div className="stat-card-header">
             <div>
               <div className="stat-card-label">กำไรสุทธิ</div>
@@ -399,7 +399,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="stat-card animate-fade-in-up stagger-6">
+        <div className="stat-card animate-slide-up stagger-6">
           <div className="stat-card-header">
             <div>
               <div className="stat-card-label">จำนวนออเดอร์</div>
@@ -419,7 +419,7 @@ export default function DashboardPage() {
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
           {/* Main Chart */}
-          <div className="chart-container animate-fade-in-up stagger-7" style={{ height: '100%' }}>
+          <div className="chart-container animate-slide-up stagger-7" style={{ height: '100%' }}>
             <div className="chart-header">
               <div>
                 <h3 className="chart-title">📈 แนวโน้มรายได้และกำไร</h3>
@@ -458,7 +458,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Product Profitability (Replaced Recipe Profitability) */}
-          <div className="chart-container animate-fade-in-up stagger-8">
+          <div className="chart-container animate-slide-up stagger-8">
             <div className="chart-header">
               <div>
                 <h3 className="chart-title">💰 วิเคราะห์ความคุ้มค่าสินค้า (Profitability)</h3>
@@ -528,7 +528,7 @@ export default function DashboardPage() {
 
 
           {/* Top Selling Products */}
-          <div className="chart-container animate-fade-in-up stagger-9">
+          <div className="chart-container animate-slide-up stagger-9">
             <div className="chart-header">
               <div>
                 <h3 className="chart-title">🏆 สินค้าขายดี (Top 5)</h3>
@@ -571,7 +571,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Low Stock Alerts */}
-          <div className="chart-container animate-fade-in-up stagger-10">
+          <div className="chart-container animate-slide-up stagger-10">
             <div className="chart-header">
               <div>
                 <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--warning)' }}>

@@ -248,6 +248,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const price_per_unit = calculatePricePerUnit(data.price, data.quantity);
     const { data: newIng } = await supabase.from('ingredients').insert({
       shop_id: profile.shop_id,
+      user_id: profile.id,
       name: data.name,
       quantity: data.quantity,
       unit: data.unit,
@@ -284,6 +285,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const price_per_unit = calculatePricePerUnit(data.price, data.quantity);
     const { data: newPkg } = await supabase.from('packaging').insert({
       shop_id: profile.shop_id,
+      user_id: profile.id,
       name: data.name,
       quantity: data.quantity,
       unit: data.unit,
@@ -420,6 +422,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!profile) return '';
     const { data: newRecipe } = await supabase.from('recipes').insert({
       shop_id: profile.shop_id,
+      user_id: profile.id,
       name: recipe.name,
       description: recipe.description,
       selling_price: recipe.selling_price,
@@ -534,6 +537,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!profile) return '';
     const { data: newProduct } = await supabase.from('products').insert({
       shop_id: profile.shop_id,
+      user_id: profile.id,
       name: product.name,
       description: product.description,
       flavor: product.flavor,
@@ -636,6 +640,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     const { data: newOrder, error: orderError } = await supabase.from('orders').insert({
       shop_id: profile.shop_id,
+      user_id: profile.id,
       order_number: generateOrderNumber(),
       status: 'pending',
       total_cost: totalCost,
