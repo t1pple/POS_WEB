@@ -170,10 +170,52 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [supabase]);
 
   useEffect(() => {
+    let realtimeChannel: ReturnType<typeof supabase.channel> | null = null;
+
+    const setupRealtime = (shopId: string, userId: string) => {
+      // Remove old channel if exists
+      if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+
+      realtimeChannel = supabase
+        .channel(`shop-${shopId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'ingredients', filter: `shop_id=eq.${shopId}` }, () => {
+          supabase.from('ingredients').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }).then(({ data }) => { if (data) setIngredients(data); });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'packaging', filter: `shop_id=eq.${shopId}` }, () => {
+          supabase.from('packaging').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }).then(({ data }) => { if (data) setPackaging(data); });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes', filter: `shop_id=eq.${shopId}` }, () => {
+          supabase.from('recipes').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }).then(({ data }) => { if (data) setRecipes(data); });
+          supabase.from('recipe_ingredients').select('*').then(({ data }) => { if (data) setRecipeIngredients(data); });
+          supabase.from('recipe_sub_recipes').select('*').then(({ data }) => { if (data) setRecipeSubRecipes(data); });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'recipe_ingredients' }, () => {
+          supabase.from('recipe_ingredients').select('*').then(({ data }) => { if (data) setRecipeIngredients(data); });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `shop_id=eq.${shopId}` }, () => {
+          supabase.from('products').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }).then(({ data }) => { if (data) setProducts(data); });
+          supabase.from('product_recipes').select('*').then(({ data }) => { if (data) setProductRecipes(data); });
+          supabase.from('product_packaging').select('*').then(({ data }) => { if (data) setProductPackaging(data); });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `shop_id=eq.${shopId}` }, () => {
+          supabase.from('orders').select('*').eq('shop_id', shopId).order('created_at', { ascending: false }).then(({ data }) => { if (data) setOrders(data); });
+          supabase.from('order_items').select('*').then(({ data }) => { if (data) setOrderItems(data); });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'shops', filter: `id=eq.${shopId}` }, () => {
+          supabase.from('shops').select('*').eq('id', shopId).single().then(({ data }) => { if (data) setShop(data); });
+        })
+        .subscribe();
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setIsAuthenticated(true);
-        fetchAllData(session.user.id);
+        fetchAllData(session.user.id).then(() => {
+          // After data is loaded, get shop_id from profile and setup realtime
+          supabase.from('profiles').select('shop_id').eq('id', session.user.id).single().then(({ data }) => {
+            if (data?.shop_id) setupRealtime(data.shop_id, session.user.id);
+          });
+        });
       } else {
         setIsAuthenticated(false);
         setProfile(null);
@@ -188,18 +230,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setProductPackaging([]);
         setOrders([]);
         setOrderItems([]);
+        if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
       }
     });
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setIsAuthenticated(true);
-        fetchAllData(user.id);
+        fetchAllData(user.id).then(() => {
+          supabase.from('profiles').select('shop_id').eq('id', user.id).single().then(({ data }) => {
+            if (data?.shop_id) setupRealtime(data.shop_id, user.id);
+          });
+        });
       }
     });
 
     return () => {
       subscription.unsubscribe();
+      if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     };
   }, [supabase, fetchAllData]);
 
