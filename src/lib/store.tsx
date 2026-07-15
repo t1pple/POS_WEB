@@ -494,19 +494,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const newRSRs = subRecipeList.map(rsr => ({ recipe_id: newRecipe.id, ...rsr }));
 
     if (newRIs.length > 0) {
-      const { data: insertedRIs } = await supabase.from('recipe_ingredients').insert(newRIs).select();
-      if (insertedRIs) setRecipeIngredients(prev => [...prev, ...insertedRIs]);
+      await supabase.from('recipe_ingredients').insert(newRIs);
     }
     if (newRPs.length > 0) {
-      const { data: insertedRPs } = await supabase.from('recipe_packaging').insert(newRPs).select();
-      if (insertedRPs) setRecipePackaging(prev => [...prev, ...insertedRPs]);
+      await supabase.from('recipe_packaging').insert(newRPs);
     }
     if (newRSRs.length > 0) {
-      const { data: insertedRSRs } = await supabase.from('recipe_sub_recipes').insert(newRSRs).select();
-      if (insertedRSRs) setRecipeSubRecipes(prev => [...prev, ...insertedRSRs]);
+      await supabase.from('recipe_sub_recipes').insert(newRSRs);
     }
 
-    setRecipes(prev => [newRecipe, ...prev]);
+    // State จะอัปเดตผ่าน Realtime subscription อัตโนมัติ
     return newRecipe.id;
   };
 
@@ -601,17 +598,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     const newPRs = recipeList.map(pr => ({ product_id: newProduct.id, ...pr }));
     if (newPRs.length > 0) {
-      const { data: insertedPRs } = await supabase.from('product_recipes').insert(newPRs).select();
-      if (insertedPRs) setProductRecipes(prev => [...prev, ...insertedPRs]);
+      await supabase.from('product_recipes').insert(newPRs);
     }
 
     const newPPs = packagingList.map(pp => ({ product_id: newProduct.id, ...pp }));
     if (newPPs.length > 0) {
-      const { data: insertedPPs } = await supabase.from('product_packaging').insert(newPPs).select();
-      if (insertedPPs) setProductPackaging(prev => [...prev, ...insertedPPs]);
+      await supabase.from('product_packaging').insert(newPPs);
     }
 
-    setProducts(prev => [newProduct, ...prev]);
+    // State จะอัปเดตผ่าน Realtime subscription อัตโนมัติ
     return newProduct.id;
   };
 
@@ -765,9 +760,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setOrders(prev => [newOrder, ...prev]);
-    if (insertedItems) setOrderItems(prev => [...insertedItems, ...prev]);
-    
+    // State จะอัปเดตผ่าน Realtime subscription อัตโนมัติ
     return newOrder.id;
   };
 
